@@ -1,36 +1,17 @@
 {
   "name": "maptalks.trendArrow",
   "version": "0.36.2",
-  "description": "A light JavaScript library to create integrated 2D/3D maps.",
-  "license": "BSD-3-Clause",
-  "author": "Fu Zhen",
+  "description": "maptalks trendArrow support.",
+  "license": "MIT",
+  "author": "Jude Hu",
   "keywords": [
     "javascript",
     "gis",
     "map",
-    "2d-maps",
-    "3d-maps",
-    "geospatial"
+    "maptalks",
+    "trendarrow"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/maptalks/maptalks.js.git"
-  },
-  "bugs": {
-    "url": "https://github.com/maptalks/maptalks.js/issues"
-  },
-  "homepage": "https://maptalks.org",
   "scripts": {
-    "report-coverage": "codecov",
-    "lint": "eslint src/**/*.js test/**/*.js",
-    "test": "gulp test --cov",
-    "pretest": "npm run lint",
-    "prepublish": "npm run build",
-    "preversion": "npm run lint",
-    "version": "npm run doc && git add -A docs/api && npm run build",
-    "postversion": "gulp zip",
-    "doc": "gulp doc",
-    "dev": "gulp connect",
     "build": "gulp minify"
   },
   "main": "dist/maptalks.trendArrow.js",
