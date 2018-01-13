@@ -4,6 +4,7 @@
 
 # Usage
 ```javascript
+var layer = new maptalks.VectorLayer('vector').addTo(map);
 var trendArrowLine = new maptalks.LineString(
 		[
 			map.getCenter().add(0.1, 0.1),
@@ -23,9 +24,11 @@ var trendArrowLine = new maptalks.LineString(
 				'fillColor': "blue",
 				'polygonOpacity': 1
 			}
-	}).addTo(map);
-```   
-###   
+	}).addTo(layer);
+```   
+[Demo](https://jsfiddle.net/JudeHu/ktgejn2v/)
+
+###   
 ![image](https://github.com/JudeHu/maptalks.trendArrow/blob/master/dist/trendarrow-demo.png)
 
 # License   
