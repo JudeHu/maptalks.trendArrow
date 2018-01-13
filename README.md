@@ -2,7 +2,7 @@
 
 **maptalks trendArrow-style support, extend from maptalks smoothLineString(maptalks@0.37.0)**
 
-# Usage
+# Usage([Demo](https://jsfiddle.net/JudeHu/ktgejn2v/))
 ```javascript
 var layer = new maptalks.VectorLayer('vector').addTo(map);
 var trendArrowLine = new maptalks.LineString(
@@ -25,10 +25,9 @@ var trendArrowLine = new maptalks.LineString(
 				'polygonOpacity': 1
 			}
 	}).addTo(layer);
-```   
-[Demo](https://jsfiddle.net/JudeHu/ktgejn2v/)
+```
 
-###   
+###  
 ![image](https://github.com/JudeHu/maptalks.trendArrow/blob/master/dist/trendarrow-demo.png)
 
 # License   
