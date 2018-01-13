@@ -2,7 +2,8 @@
 
 **maptalks trendArrow-style support, extend from maptalks smoothLineString(maptalks@0.37.0)**
 
-# Usage([Demo](https://jsfiddle.net/JudeHu/ktgejn2v/))
+## Usage
+[Demo](https://jsfiddle.net/JudeHu/ktgejn2v/)
 ```javascript
 var layer = new maptalks.VectorLayer('vector').addTo(map);
 var trendArrowLine = new maptalks.LineString(
