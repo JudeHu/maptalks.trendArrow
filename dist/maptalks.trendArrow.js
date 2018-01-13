@@ -1,6 +1,6 @@
 /*!
- * maptalks.trendArrow v0.36.2
- * LICENSE : BSD-3-Clause
+ * maptalks.trendArrow v0.1.1
+ * LICENSE : MIT
  * (c) 2016-2018 maptalks.org
  */
 (function (global, factory) {
