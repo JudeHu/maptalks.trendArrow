@@ -1,5 +1,5 @@
 /*!
- * maptalks.trendArrow v0.1.1
+ * maptalks.trendArrow v0.1.0
  * LICENSE : MIT
  * (c) 2016-2018 maptalks.org
  */
