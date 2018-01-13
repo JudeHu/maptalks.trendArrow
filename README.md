@@ -13,7 +13,7 @@ var trendArrowLine = new maptalks.LineString(
 		], 
 		{
 			smoothness: 1,			
-			closed: false,          // trendArrow valid when not linestring-closed
+			closed: false,          // trendArrow invalid when linestring-closed
 			arrowStyle: 'trend',    // trendArrow tyle
 			arrowSize: 20,          // trendArrowSize
 			symbol: {               // trendArrow Paint-Style
