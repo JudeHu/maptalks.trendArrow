@@ -1,6 +1,6 @@
 /*!
- * maptalks.trendArrow v0.36.2
- * LICENSE : BSD-3-Clause
+ * maptalks.trendArrow v0.1.0
+ * LICENSE : MIT
  * (c) 2016-2018 maptalks.org
  */
 import { Canvas, Point, Util } from 'maptalks';
