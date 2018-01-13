@@ -1,6 +1,6 @@
 # maptalks.trendArrow
 
-maptalks trendArrow-style support, extend from maptalks smoothLineString(maptalks@0.37.0)
+* maptalks trendArrow-style support, extend from maptalks smoothLineString(maptalks@0.37.0) *
 
 # Usage
 ```javascript
