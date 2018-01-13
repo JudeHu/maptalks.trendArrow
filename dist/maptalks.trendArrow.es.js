@@ -370,4 +370,4 @@ var LineStringExtend = {
 
 maptalks.LineString.include(LineStringExtend);
 
-typeof console !== 'undefined' && console.log('maptalks.trendArrow v0.36.2');
+typeof console !== 'undefined' && console.log('maptalks.trendArrow v0.1.0');
