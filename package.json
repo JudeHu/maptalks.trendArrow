@@ -1,0 +1,83 @@
+{
+  "name": "maptalks.trendArrow",
+  "version": "0.36.2",
+  "description": "A light JavaScript library to create integrated 2D/3D maps.",
+  "license": "BSD-3-Clause",
+  "author": "Fu Zhen",
+  "keywords": [
+    "javascript",
+    "gis",
+    "map",
+    "2d-maps",
+    "3d-maps",
+    "geospatial"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/maptalks/maptalks.js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/maptalks/maptalks.js/issues"
+  },
+  "homepage": "https://maptalks.org",
+  "scripts": {
+    "report-coverage": "codecov",
+    "lint": "eslint src/**/*.js test/**/*.js",
+    "test": "gulp test --cov",
+    "pretest": "npm run lint",
+    "prepublish": "npm run build",
+    "preversion": "npm run lint",
+    "version": "npm run doc && git add -A docs/api && npm run build",
+    "postversion": "gulp zip",
+    "doc": "gulp doc",
+    "dev": "gulp connect",
+    "build": "gulp minify"
+  },
+  "main": "dist/maptalks.trendArrow.js",
+  "browser": "dist/maptalks.trendArrow.min.js",
+  "module": "dist/maptalks.trendArrow.es.js",
+  "jsnext:main": "dist/maptalks.trendArrow.es.js",
+  "dependencies": {
+    "simplify-js": "^1.2.1",
+    "zousan": "^2.3.3"
+  },
+  "devDependencies": {
+    "babel-eslint": "^7.2.3",
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-plugin-istanbul": "^4.1.4",
+    "babel-preset-es2015": "^6.24.1",
+    "del": "^3.0.0",
+    "eslint": "^4.5.0",
+    "eslint-config-maptalks": "^0.2.2",
+    "eslint-plugin-mocha": "^4.11.0",
+    "expect-maptalks": "^0.4.1",
+    "expect.js": "^0.3.1",
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-connect": "^5.0.0",
+    "gulp-cssnano": "^2.1.2",
+    "gulp-zip": "^4.0.0",
+    "happen": "^0.3.1",
+    "jsdoc": "^3.5.4",
+    "karma": "^1.7.0",
+    "karma-babel-preprocessor": "^6.0.1",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-coverage": "^1.1.1",
+    "karma-expect": "^1.1.3",
+    "karma-expect-maptalks": "^0.1.5",
+    "karma-firefox-launcher": "^1.0.1",
+    "karma-happen": "^0.1.0",
+    "karma-ie-launcher": "^1.0.0",
+    "karma-mocha": "^1.3.0",
+    "karma-mocha-reporter": "^2.2.4",
+    "karma-rollup-preprocessor": "^5.0.1",
+    "karma-safari-launcher": "^1.0.0",
+    "karma-sinon": "^1.0.5",
+    "maptalks-build-helpers": "^0.4.2",
+    "maptalks-jsdoc": "^0.2.0",
+    "maptalks-rollup-plugin-alias": "^1.3.3",
+    "minimist": "^1.2.0",
+    "mocha": "^3.5.0",
+    "sinon": "^3.2.1"
+  }
+}
