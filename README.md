@@ -24,7 +24,9 @@ var trendArrowLine = new maptalks.LineString(
 				'polygonOpacity': 1
 			}
 	}).addTo(map);
-```
+```   
+###   
+![image](https://github.com/JudeHu/maptalks.trendArrow/blob/master/dist/trendarrow-demo.png)
 
 # License   
 MIT License.
