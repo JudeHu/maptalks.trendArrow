@@ -3,7 +3,7 @@
  * LICENSE : MIT
  * (c) 2016-2018 maptalks.org
  */
-import { Canvas, Point, Util } from 'maptalks';
+import { Canvas, LineString, Point, Util } from 'maptalks';
 
 function distance(pt1, pt2) {
 	const xdis = pt2.x - pt1.x;
@@ -257,7 +257,7 @@ var canvasExtend = {
 	}
 };
 
-Util.extend(maptalks.Canvas, canvasExtend);
+Util.extend(Canvas, canvasExtend);
 
 var LineStringExtend = {
 	_paintOn(ctx, points, lineOpacity, fillOpacity, dasharray) {
@@ -368,6 +368,6 @@ var LineStringExtend = {
 	}
 };
 
-maptalks.LineString.include(LineStringExtend);
+LineString.include(LineStringExtend);
 
 typeof console !== 'undefined' && console.log('maptalks.trendArrow v0.1.0');
