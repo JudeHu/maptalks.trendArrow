@@ -260,7 +260,7 @@ var canvasExtend = {
 Util.extend(Canvas, canvasExtend);
 
 var LineStringExtend = {
-	_paintOn(ctx, points, lineOpacity, fillOpacity, dasharray) {
+	_paintOn: function (ctx, points, lineOpacity, fillOpacity, dasharray) {
 		if (this.options['smoothness']) {
 			if (this.options["arrowStyle"] == "trend" && this.options["closed"] !== true) {
 				this.curveLengths = [];
@@ -277,7 +277,7 @@ var LineStringExtend = {
 		}
 	},
 
-	_patintTrendArrow(ctx, points, arrorSize, lineOpacity, fillOpacity) {
+	_patintTrendArrow: function (ctx, points, arrorSize, lineOpacity, fillOpacity) {
 		let leftOffsetPts = [],
 		    rightOffsetPts = [];
 		this._getOffsetCurvePoints(points, this.pointCurvatures, this.curveLengths, arrorSize, leftOffsetPts, rightOffsetPts);
@@ -330,7 +330,7 @@ var LineStringExtend = {
 		Canvas.fillCanvas(ctx, fillOpacity);
 	},
 
-	_getOffsetCurvePoints(points, pointCurvatures, curveLengths, maxOffset, _leftOffsetPts, _rightOffsetPts) {
+	_getOffsetCurvePoints: function (points, pointCurvatures, curveLengths, maxOffset, _leftOffsetPts, _rightOffsetPts) {
 		if (pointCurvatures.length !== points.length || curveLengths.length !== points.length - 1) return;
 
 		let totalCurveLen = 0;
