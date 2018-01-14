@@ -248,7 +248,7 @@ var canvasExtend = {
 	}
 };
 
-Util.extend(maptalks.Canvas, canvasExtend);
+Util.extend(Canvas, canvasExtend);
 
 var LineStringExtend = {
 	_paintOn(ctx, points, lineOpacity, fillOpacity, dasharray) {
@@ -363,4 +363,4 @@ var LineStringExtend = {
     }
 }
 
-maptalks.LineString.include(LineStringExtend);
+LineString.include(LineStringExtend);
