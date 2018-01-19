@@ -16,8 +16,8 @@ var trendArrowLine = new maptalks.LineString(
 		{
 		  	smoothness: 1,
 		  	closed: false,		// trendArrow invalid when linestring-closed
-          		arrowStyle : 'trend', // trendArrow tyle
-          		symbol:{				// trendArrow Paint-Style(same with linestring paint-style)
+          		arrowStyle : 'trend', 	// trendArrow tyle
+          		symbol:{		// trendArrow Paint-Style(same with linestring paint-style)
             			'lineColor' : 'red',
             			'lineWidth' : 12,
 				'lineOpacity': 0.9
