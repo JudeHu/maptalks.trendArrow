@@ -1,5 +1,5 @@
 /*!
- * maptalks.trendArrow v0.1.0
+ * maptalks.trendArrow v0.1.1
  * LICENSE : MIT
  * (c) 2016-2018 maptalks.org
  */
@@ -106,7 +106,7 @@ function reversePts(pts) {
 	return pts;
 }
 
-var canvasExtend = {
+const canvasExtend = {
 
 	getSmoothLineParams: function (points, smoothValue, out_curveLengths, out_pointCurvatures) {
 		if (!points || points.length < 2) {
@@ -192,7 +192,7 @@ var canvasExtend = {
 	},
 
 	// reload paintSmoothLine with no beginPath
-	paintSmoothLineNoBeginPath: function (ctx, points, lineOpacity, smoothValue, close) {
+	paintSmoothLineNoBeginPath: function (ctx, points, smoothValue, close) {
 		if (!points) {
 			return;
 		}
@@ -257,81 +257,74 @@ var canvasExtend = {
 			preCtrlPoints = ctrlPoints;
 		}
 		points[points.length - 1].prevCtrlPoint = lastCtrlPoints ? lastCtrlPoints.slice(2) : null;
-		maptalks.Canvas._stroke(ctx, lineOpacity);
 	}
 };
 
 maptalks.Util.extend(maptalks.Canvas, canvasExtend);
 
-var LineStringExtend = {
+const originPaintOn = maptalks.LineString.prototype._paintOn;
+const LineStringExtend = {
 	_paintOn: function (ctx, points, lineOpacity, fillOpacity, dasharray) {
-		if (this.options['smoothness']) {
-			if (this.options["arrowStyle"] == "trend" && this.options["closed"] !== true) {
-				this.curveLengths = [];
-				this.pointCurvatures = [];
-				maptalks.Canvas.getSmoothLineParams(points, this.options['smoothness'], this.curveLengths, this.pointCurvatures);
-				this._patintTrendArrow(ctx, points, this.options["arrowSize"] || 20, lineOpacity, fillOpacity);
-			} else {
-				maptalks.Canvas.paintSmoothLine(ctx, points, lineOpacity, this.options['smoothness']);
-				this._paintArrow(ctx, points, lineOpacity);
-			}
+
+		if (this.options['smoothness'] && this.options["arrowStyle"] == "trend" && this.options["closed"] !== true) {
+			this.curveLengths = [];
+			this.pointCurvatures = [];
+			maptalks.Canvas.getSmoothLineParams(points, this.options['smoothness'], this.curveLengths, this.pointCurvatures);
+
+			const lineWidth = this._getInternalSymbol()['lineWidth'];
+			const lineColor = this._getInternalSymbol()['lineColor'];
+			const lineOpacity = this._getInternalSymbol()['lineOpacity'];
+
+			this._patintTrendArrow(ctx, points, lineWidth, lineColor, lineOpacity);
 		} else {
-			maptalks.Canvas.path(ctx, points, lineOpacity, null, dasharray);
-			this._paintArrow(ctx, points, lineOpacity);
+			originPaintOn.apply(this, arguments);
 		}
 	},
 
-	_patintTrendArrow: function (ctx, points, arrorSize, lineOpacity, fillOpacity) {
+	_patintTrendArrow: function (ctx, points, lineWidth, lineColor, lineOpacity) {
 		let leftOffsetPts = [],
 		    rightOffsetPts = [];
-		this._getOffsetCurvePoints(points, this.pointCurvatures, this.curveLengths, arrorSize, leftOffsetPts, rightOffsetPts);
-		const endCurvatures = this.pointCurvatures[points.length - 1];
+		this._getOffsetCurvePoints(points, this.pointCurvatures, this.curveLengths, lineWidth, leftOffsetPts, rightOffsetPts);
 
 		const len = points.length;
 
-		let tailPts = [];
-		const vec1 = points[0].substract(leftOffsetPts[0]);
+		let tailPts = [],
+		    vec;
+		vec = rightOffsetPts[0].substract(leftOffsetPts[0]);
+		vec = vec.unit().multi(lineWidth * 0.8);
+
 		tailPts.push(leftOffsetPts[0]);
-		tailPts.push(leftOffsetPts[0].add(vecRotate(vec1, -90)));
-		tailPts.push(points[0]);
-		const vec2 = points[0].substract(rightOffsetPts[0]);
-		tailPts.push(rightOffsetPts[0].add(vecRotate(vec2, 90)));
+		tailPts.push(points[0].add(vecRotate(vec, 90)));
 		tailPts.push(rightOffsetPts[0]);
 
 		let headPts = [];
+		const headArrowSize = 13;
 		const endPoint = points[len - 1];
-		let vec3 = rightOffsetPts[len - 1].substract(leftOffsetPts[len - 1]);
-		vec3 = vec3.perp().unit().multi(arrorSize);
-		const headPt = points[len - 1].add(vec3);
+		vec = rightOffsetPts[len - 1].substract(leftOffsetPts[len - 1]);
+		vec = vec.perp().unit().multi(headArrowSize);
+		const headPt = points[len - 1].add(vec);
 		headPts.push(rightOffsetPts[len - 1]);
-		headPts.push(points[len - 1].add(vecRotate(vec3, -135)));
+		headPts.push(points[len - 1].add(vecRotate(vec, -135)));
 		headPts.push(headPt);
-		headPts.push(points[len - 1].add(vecRotate(vec3, 135)));
+		headPts.push(points[len - 1].add(vecRotate(vec, 135)));
 		headPts.push(leftOffsetPts[len - 1]);
 
-		var lineWidth = this._getInternalSymbol()['lineWidth'];
-		ctx.fillStyle = this._getInternalSymbol()['fillColor'];
-		ctx.strokeStyle = this._getInternalSymbol()['lineColor'];
+		ctx.fillStyle = lineColor;
 
 		ctx.beginPath();
 		maptalks.Canvas._stroke(ctx, lineOpacity);
 
-		reversePts(tailPts);
-		ctx.moveTo(tailPts[0].x, tailPts[0].y);
-		for (let i = 1; i < tailPts.length; i++) ctx.lineTo(tailPts[i].x, tailPts[i].y);
+		ctx.moveTo(rightOffsetPts[0].x, rightOffsetPts[0].y);
+		maptalks.Canvas.paintSmoothLineNoBeginPath(ctx, rightOffsetPts, this.options['smoothness'], false);
 
-		maptalks.Canvas.paintSmoothLineNoBeginPath(ctx, rightOffsetPts, lineOpacity, this.options['smoothness'], false);
-
-		ctx.lineTo(headPts[0].x, headPts[0].y);
-		for (let i = 1; i < headPts.length; i++) ctx.lineTo(headPts[i].x, headPts[i].y);
+		for (let i = 0; i < headPts.length; i++) ctx.lineTo(headPts[i].x, headPts[i].y);
 
 		reversePts(leftOffsetPts);
+		maptalks.Canvas.paintSmoothLineNoBeginPath(ctx, leftOffsetPts, this.options['smoothness'], false);
 
-		maptalks.Canvas.paintSmoothLineNoBeginPath(ctx, leftOffsetPts, lineOpacity, this.options['smoothness'], false);
-		ctx.lineTo(tailPts[0].x, tailPts[0].y);
+		for (let i = 0; i < tailPts.length; i++) ctx.lineTo(tailPts[i].x, tailPts[i].y);
 
-		ctx.closePath();
-		maptalks.Canvas.fillCanvas(ctx, fillOpacity);
+		maptalks.Canvas.fillCanvas(ctx, lineOpacity);
 	},
 
 	_getOffsetCurvePoints: function (points, pointCurvatures, curveLengths, maxOffset, _leftOffsetPts, _rightOffsetPts) {
@@ -358,7 +351,7 @@ var LineStringExtend = {
 				offset = maxOffset;
 			} else {
 				tempLen += curveLengths[i - 1];
-				offset = parseFloat(maxOffset + 2 - tempLen / totalCurveLen * maxOffset);
+				offset = 2 + (maxOffset - 2) * (1 - tempLen / totalCurveLen);
 			}
 
 			const refvec = i !== points.length - 1 ? points[i + 1].substract(points[i]) : points[i].substract(points[i - 1]);
@@ -374,6 +367,6 @@ var LineStringExtend = {
 
 maptalks.LineString.include(LineStringExtend);
 
-typeof console !== 'undefined' && console.log('maptalks.trendArrow v0.1.0');
+typeof console !== 'undefined' && console.log('maptalks.trendArrow v0.1.1');
 
 })));
