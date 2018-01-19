@@ -11,21 +11,19 @@ var trendArrowLine = new maptalks.LineString(
 			map.getCenter().add(0.1, 0.1),
 			map.getCenter().add(-0.1, 0.1),
 			map.getCenter().add(-0.1, -0.1),
-			map.getCenter().add(0.5, -0.1),
+			map.getCenter().add(0.5, -0.1)
 		], 
 		{
-			smoothness: 1,			
-			closed: false,          // trendArrow invalid when linestring-closed
-			arrowStyle: 'trend',    // trendArrow tyle
-			arrowSize: 20,          // trendArrowSize
-			symbol: {               // trendArrow Paint-Style
-				'lineColor': 'red',
-				'lineWidth': 6,
-				'lineOpacity': 1,
-				'fillColor': "blue",
-				'polygonOpacity': 1
-			}
-	}).addTo(layer);
+		  	smoothness: 1,
+		  	closed: false,		// trendArrow invalid when linestring-closed
+          		arrowStyle : 'trend', // trendArrow tyle
+          		symbol:{				// trendArrow Paint-Style(same with linestring paint-style)
+            			'lineColor' : 'red',
+            			'lineWidth' : 12,
+				'lineOpacity': 0.9
+         		 }
+        	}
+	).addTo(layer);
 ```
 
 ###  
