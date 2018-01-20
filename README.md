@@ -14,8 +14,7 @@ var trendArrowLine = new maptalks.LineString(
 			map.getCenter().add(0.5, -0.1)
 		], 
 		{
-		  	smoothness: 1,
-		  	closed: false,		// trendArrow invalid when linestring closed
+		  	smoothness: 0.7,
           		arrowStyle : 'trend', 	// trendArrow style
           		symbol:{		// trendArrow Paint-Style(same with linestring paint-style)
             			'lineColor' : 'red',
