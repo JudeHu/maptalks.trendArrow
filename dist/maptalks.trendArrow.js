@@ -18,7 +18,7 @@ function ratio(pt1, pt2) {
 	const vecX = pt2.x - pt1.x;
 	const vecY = pt2.y - pt1.y;
 	let vecLen = distance(pt1, pt2);
-	if (vecLen < 0.0000001) return { x: 0, y: 0 };
+	if (vecLen < 0.000001) return { x: 0, y: 0 };
 	return { x: vecX / vecLen, y: vecY / vecLen };
 }
 
@@ -106,6 +106,26 @@ function reversePts(pts) {
 	return pts;
 }
 
+function isSamePoint(pt1, pt2) {
+	if (Math.abs(pt1.x - pt2.x) < 0.000001 && Math.abs(pt1.y - pt2.y) < 0.000001) return true;
+	return false;
+}
+
+// remove duplicate adjacent point 
+function delDuplicatePt(pts) {
+	let i = 0;
+
+	while (i < pts.length - 1) {
+		if (isSamePoint(pts[i], pts[i + 1])) {
+			pts.splice(i + 1, 1);
+			continue;
+		} else {
+			i++;
+		}
+	}
+	return pts;
+}
+
 const canvasExtend = {
 
 	getSmoothLineParams: function (points, smoothValue, out_curveLengths, out_pointCurvatures) {
@@ -120,7 +140,7 @@ const canvasExtend = {
 			return;
 		}
 
-		const extLen = 200;
+		const extLen = 20;
 		function extVec(pt1, pt2, extLen) {
 			const vec = ratio(pt1, pt2);
 			return { x: pt2.x + vec.x * extLen, y: pt2.y + vec.y * extLen };
@@ -267,21 +287,30 @@ const LineStringExtend = {
 	_paintOn: function (ctx, points, lineOpacity, fillOpacity, dasharray) {
 
 		if (this.options['smoothness'] && this.options["arrowStyle"] == "trend" && this.options["closed"] !== true) {
-			this.curveLengths = [];
-			this.pointCurvatures = [];
-			maptalks.Canvas.getSmoothLineParams(points, this.options['smoothness'], this.curveLengths, this.pointCurvatures);
-
-			const lineWidth = this._getInternalSymbol()['lineWidth'];
+			const lineWidth = parseFloat(this._getInternalSymbol()['lineWidth']);
 			const lineColor = this._getInternalSymbol()['lineColor'];
-			const lineOpacity = this._getInternalSymbol()['lineOpacity'];
+			const lineOpacity = parseFloat(this._getInternalSymbol()['lineOpacity']);
+			const smoothness = parseFloat(this.options['smoothness']);
 
-			this._patintTrendArrow(ctx, points, lineWidth, lineColor, lineOpacity);
+			this._patintTrendArrow(ctx, points, lineWidth, lineColor, lineOpacity, smoothness);
 		} else {
 			originPaintOn.apply(this, arguments);
 		}
 	},
 
-	_patintTrendArrow: function (ctx, points, lineWidth, lineColor, lineOpacity) {
+	_patintTrendArrow: function (ctx, points, lineWidth, lineColor, lineOpacity, smoothness) {
+		if (lineWidth <= 0 || isNaN(lineWidth)) return;
+
+		delDuplicatePt(points);
+		if (points.length < 2) return;
+
+		if (isNaN(smoothness) || smoothness <= 0) smoothness = 0.000001;
+		if (smoothness > 1) smoothness = 1;
+
+		this.curveLengths = []; // save the curve params
+		this.pointCurvatures = []; // save the curve params
+		maptalks.Canvas.getSmoothLineParams(points, smoothness, this.curveLengths, this.pointCurvatures);
+
 		let leftOffsetPts = [],
 		    rightOffsetPts = [];
 		this._getOffsetCurvePoints(points, this.pointCurvatures, this.curveLengths, lineWidth, leftOffsetPts, rightOffsetPts);
@@ -298,7 +327,10 @@ const LineStringExtend = {
 		tailPts.push(rightOffsetPts[0]);
 
 		let headPts = [];
-		const headArrowSize = 13;
+		let headArrowSize = lineWidth * 1.5;
+		headArrowSize = headArrowSize > 20 ? 20 : headArrowSize;
+		headArrowSize = headArrowSize < 8 ? 8 : headArrowSize;
+
 		const endPoint = points[len - 1];
 		vec = rightOffsetPts[len - 1].substract(leftOffsetPts[len - 1]);
 		vec = vec.perp().unit().multi(headArrowSize);
@@ -315,12 +347,12 @@ const LineStringExtend = {
 		maptalks.Canvas._stroke(ctx, lineOpacity);
 
 		ctx.moveTo(rightOffsetPts[0].x, rightOffsetPts[0].y);
-		maptalks.Canvas.paintSmoothLineNoBeginPath(ctx, rightOffsetPts, this.options['smoothness'], false);
+		maptalks.Canvas.paintSmoothLineNoBeginPath(ctx, rightOffsetPts, smoothness, false);
 
 		for (let i = 0; i < headPts.length; i++) ctx.lineTo(headPts[i].x, headPts[i].y);
 
 		reversePts(leftOffsetPts);
-		maptalks.Canvas.paintSmoothLineNoBeginPath(ctx, leftOffsetPts, this.options['smoothness'], false);
+		maptalks.Canvas.paintSmoothLineNoBeginPath(ctx, leftOffsetPts, smoothness, false);
 
 		for (let i = 0; i < tailPts.length; i++) ctx.lineTo(tailPts[i].x, tailPts[i].y);
 
@@ -351,7 +383,11 @@ const LineStringExtend = {
 				offset = maxOffset;
 			} else {
 				tempLen += curveLengths[i - 1];
-				offset = 2 + (maxOffset - 2) * (1 - tempLen / totalCurveLen);
+				if (maxOffset * 0.2 > 2) {
+					offset = 2 + maxOffset * 0.8 * (1 - tempLen / totalCurveLen);
+				} else {
+					offset = maxOffset * 0.2 + maxOffset * 0.8 * (1 - tempLen / totalCurveLen);
+				}
 			}
 
 			const refvec = i !== points.length - 1 ? points[i + 1].substract(points[i]) : points[i].substract(points[i - 1]);
