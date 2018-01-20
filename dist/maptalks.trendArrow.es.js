@@ -380,7 +380,7 @@ const LineStringExtend = {
 			} else {
 				tempLen += curveLengths[i - 1];
 				if (maxOffset * 0.2 > 2) {
-					offset = 2 + maxOffset * 0.8 * (1 - tempLen / totalCurveLen);
+					offset = 2 + (maxOffset - 2) * (1 - tempLen / totalCurveLen);
 				} else {
 					offset = maxOffset * 0.2 + maxOffset * 0.8 * (1 - tempLen / totalCurveLen);
 				}
