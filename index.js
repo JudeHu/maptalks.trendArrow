@@ -272,7 +272,12 @@ const canvasExtend = {
 Util.extend(Canvas, canvasExtend);
 
 const originPaintOn = LineString.prototype._paintOn;
+
+Util.extend(LineString.prototype.arrowStyles,{
+	'sharp': [0, 2.5]	// extend from classic style, array[1] define arrow height, array[0] is not used
+});
 const LineStringExtend = {
+
 	_paintOn: function(ctx, points, lineOpacity, fillOpacity, dasharray) {
 
 		if (this.options['smoothness'] && this.options["arrowStyle"] == "trend" && this.options["closed"]!==true){
@@ -387,6 +392,43 @@ const LineStringExtend = {
             _leftOffsetPts && _leftOffsetPts.push(points[i].add(leftCrossVec.multi(offset)));
             _rightOffsetPts && _rightOffsetPts.push(points[i].add(rightCrossVec.multi(offset)));
         }
+    },
+	
+	// extend classic arrow shape
+	_getArrowShape(prePoint, point, lineWidth, arrowStyle, tolerance) {
+        if (!tolerance) {
+            tolerance = 0;
+        }
+        const width = lineWidth * arrowStyle[0],
+            height = lineWidth * arrowStyle[1] + tolerance,
+            hw = width / 2 + tolerance;
+
+        let normal;
+        if (point.nextCtrlPoint || point.prevCtrlPoint) {
+            // use control points to caculate normal if it's a bezier curve
+            if (point.prevCtrlPoint) {
+                normal = point.sub(new Point(point.prevCtrlPoint));
+            } else {
+                normal = point.sub(new Point(point.nextCtrlPoint));
+            }
+        } else {
+            normal = point.sub(prePoint);
+        }
+        normal._unit();
+		if(this.options["arrowStyle"] == "classic"){
+			const p1 = point.sub(normal.multi(height));
+			normal._perp();
+			const p0 = p1.add(normal.multi(hw));
+			normal._multi(-1);
+			const p2 = p1.add(normal.multi(hw));
+			return [p0, point, p2, p0];   
+		}
+		else if(this.options["arrowStyle"] == "sharp"){
+			const p0 = point.add(normal.multi(height));
+			const p1 = point.add(vecRotate(normal, 150).multi(height));
+			const p2 = point.add(vecRotate(normal, -150).multi(height));
+			return [p0, p1, point, p2, p0];			
+		}
     }
 }
 
