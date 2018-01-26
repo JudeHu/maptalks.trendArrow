@@ -279,7 +279,7 @@ Util.extend(LineString.prototype.arrowStyles,{
 const LineStringExtend = {
 
 	_paintOn: function(ctx, points, lineOpacity, fillOpacity, dasharray) {
-
+		delDuplicatePt(points);		//  paint smoothline error when adjacent-points duplicate
 		if (this.options['smoothness'] && this.options["arrowStyle"] == "trend" && this.options["closed"]!==true){
 			const lineWidth = parseFloat(this._getInternalSymbol()['lineWidth']);
 			const lineColor = this._getInternalSymbol()['lineColor'];
@@ -296,7 +296,7 @@ const LineStringExtend = {
     _patintTrendArrow: function(ctx, points, lineWidth, lineColor, lineOpacity, smoothness){
 		if(lineWidth<=0 || isNaN(lineWidth)) return;
 
-		delDuplicatePt(points);
+		//delDuplicatePt(points);
 		if(points.length<2) return;
 		
 		if(isNaN(smoothness) || smoothness<=0) smoothness = 0.000001;
