@@ -424,10 +424,10 @@ const LineStringExtend = {
 			return [p0, point, p2, p0];   
 		}
 		else if(this.options["arrowStyle"] == "sharp"){
-			const p0 = point.add(normal.multi(height));
-			const p1 = point.add(vecRotate(normal, 150).multi(height));
-			const p2 = point.add(vecRotate(normal, -150).multi(height));
-			return [p0, p1, point, p2, p0];			
+			const p1 = point.sub(normal.multi(height));
+			const p0 = p1.add(vecRotate(normal, 150).multi(height));
+			const p2 = p1.add(vecRotate(normal, -150).multi(height));
+			return [p0, p1, p2, point, p0];			
 		}
     }
 }
