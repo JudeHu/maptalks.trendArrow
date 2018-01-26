@@ -43,7 +43,7 @@ var trendArrowLine = new maptalks.LineString(
 		  	smoothness: 0.7,
           		arrowStyle : 'sharp', 	// trendArrow style
 			arrowPlacement: 'point',// vertex-firstlast, vertex-first, vertex-last, vertex-firstlast, point
-          		symbol:{		// trendArrow Paint-Style(same with linestring paint-style)
+          		symbol:{		
             			'lineColor' : 'red',
             			'lineWidth' : 3,
 				'lineOpacity': 0.9
