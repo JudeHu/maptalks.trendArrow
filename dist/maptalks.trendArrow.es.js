@@ -1,5 +1,5 @@
 /*!
- * maptalks.trendArrow v0.1.2
+ * maptalks.trendArrow v0.1.3
  * LICENSE : MIT
  * (c) 2016-2018 maptalks.org
  */
@@ -136,72 +136,63 @@ const canvasExtend = {
 			return;
 		}
 
-		const extLen = 20;
-		function extVec(pt1, pt2, extLen) {
-			const vec = ratio(pt1, pt2);
-			return { x: pt2.x + vec.x * extLen, y: pt2.y + vec.y * extLen };
-		}
-		const closed = true;
-		let extPoints = [];
-		extPoints.push(extVec(points[1], points[0], extLen));
-		for (let i = 0; i < points.length; i++) extPoints.push(points[i]);
-		extPoints.push(extVec(points[points.length - 2], points[points.length - 1], extLen));
+		const close = false;
+		const count = points.length;
+		const l = close ? count : count - 1;
 
-		const count = extPoints.length;
-		const l = count;
-
-		let preCtrlPoints, lastCtrlPoints;
+		let preCtrlPoints;
 		for (let i = 0; i < l; i++) {
-			const x1 = extPoints[i].x,
-			      y1 = extPoints[i].y;
+			const x1 = points[i].x,
+			      y1 = points[i].y;
 
 			let x0, y0, x2, y2, x3, y3;
 			if (i - 1 < 0) {
 				if (!close) {
-					//the first point's prev point
-					x0 = 2 * extPoints[i].x - extPoints[i + 1].x;
-					y0 = 2 * extPoints[i].y - extPoints[i + 1].y;
+					const d = points[i + 1].sub(points[i]);
+					x0 = 2 * points[i].x - (points[i].x - d.x);
+					y0 = 2 * points[i].y - (points[i].y - d.y);
 				} else {
-					x0 = extPoints[l - 1].x;
-					y0 = extPoints[l - 1].y;
+					x0 = points[l - 1].x;
+					y0 = points[l - 1].y;
 				}
 			} else {
-				x0 = extPoints[i - 1].x;
-				y0 = extPoints[i - 1].y;
+				x0 = points[i - 1].x;
+				y0 = points[i - 1].y;
 			}
 			if (i + 1 < count) {
-				x2 = extPoints[i + 1].x;
-				y2 = extPoints[i + 1].y;
+				x2 = points[i + 1].x;
+				y2 = points[i + 1].y;
 			} else {
-				x2 = extPoints[i + 1 - count].x;
-				y2 = extPoints[i + 1 - count].y;
+				x2 = points[i + 1 - count].x;
+				y2 = points[i + 1 - count].y;
 			}
 			if (i + 2 < count) {
-				x3 = extPoints[i + 2].x;
-				y3 = extPoints[i + 2].y;
+				x3 = points[i + 2].x;
+				y3 = points[i + 2].y;
 			} else if (!close) {
+				const d = points[i + 1].sub(points[i]);
 				//the last point's next point
-				x3 = 2 * extPoints[i + 1].x - extPoints[i].x;
-				y3 = 2 * extPoints[i + 1].y - extPoints[i].y;
+				x3 = 2 * points[i + 1].x - (points[i + 1].x + d.x);
+				y3 = 2 * points[i + 1].y - (points[i + 1].y + d.y);
 			} else {
-				x3 = extPoints[i + 2 - count].x;
-				y3 = extPoints[i + 2 - count].y;
+				x3 = points[i + 2 - count].x;
+				y3 = points[i + 2 - count].y;
 			}
 
 			const ctrlPoints = getCubicControlPoints(x0, y0, x1, y1, x2, y2, x3, y3, smoothValue);
-
-			if (i === count - 1) {
-				lastCtrlPoints = ctrlPoints;
-			}
-			extPoints[i].nextCtrlPoint = ctrlPoints.slice(0, 2);
-			extPoints[i].prevCtrlPoint = preCtrlPoints ? preCtrlPoints.slice(2) : null;
+			points[i].nextCtrlPoint = ctrlPoints.slice(0, 2);
+			points[i].prevCtrlPoint = preCtrlPoints ? preCtrlPoints.slice(2) : null;
 			preCtrlPoints = ctrlPoints;
 		}
+		if (!close) {
+			points[0].nextCtrlPoint = points[1].prevCtrlPoint;
+			delete points[0].prevCtrlPoint;
+		}
+		points[count - 1].prevCtrlPoint = points[count - 2].nextCtrlPoint;
 
 		for (let i = 0; i < points.length; i++) {
-			points[i] = extPoints[i + 1];
-			const preCtrlPt = points[i].prevCtrlPoint,
-			      nextCtrlPt = points[i].nextCtrlPoint;
+			const preCtrlPt = points[i].prevCtrlPoint ? points[i].prevCtrlPoint : [points[i].x, points[i].y],
+			      nextCtrlPt = points[i].nextCtrlPoint ? points[i].nextCtrlPoint : [points[i].x, points[i].y];
 			out_curveLengths && i != points.length - 1 && out_curveLengths.push(getCubicCurveLength(preCtrlPt[0], preCtrlPt[1], nextCtrlPt[0], nextCtrlPt[1], points[i + 1].x, points[i + 1].y));
 			out_pointCurvatures && out_pointCurvatures.push(ratio({ x: preCtrlPt[0], y: preCtrlPt[1] }, { x: nextCtrlPt[0], y: nextCtrlPt[1] }));
 		}
@@ -231,9 +222,10 @@ const canvasExtend = {
 			let x0, y0, x2, y2, x3, y3;
 			if (i - 1 < 0) {
 				if (!close) {
+					const d = points[i + 1].sub(points[i]);
 					//the first point's prev point
-					x0 = 2 * points[i].x - points[i + 1].x;
-					y0 = 2 * points[i].y - points[i + 1].y;
+					x0 = 2 * points[i].x - (points[i].x - d.x);
+					y0 = 2 * points[i].y - (points[i].y - d.y);
 				} else {
 					x0 = points[l - 1].x;
 					y0 = points[l - 1].y;
@@ -253,9 +245,10 @@ const canvasExtend = {
 				x3 = points[i + 2].x;
 				y3 = points[i + 2].y;
 			} else if (!close) {
+				const d = points[i + 1].sub(points[i]);
 				//the last point's next point
-				x3 = 2 * points[i + 1].x - points[i].x;
-				y3 = 2 * points[i + 1].y - points[i].y;
+				x3 = 2 * points[i + 1].x - (points[i + 1].x + d.x);
+				y3 = 2 * points[i + 1].y - (points[i + 1].y + d.y);
 			} else {
 				x3 = points[i + 2 - count].x;
 				y3 = points[i + 2 - count].y;
@@ -286,7 +279,7 @@ Util.extend(LineString.prototype.arrowStyles, {
 const LineStringExtend = {
 
 	_paintOn: function (ctx, points, lineOpacity, fillOpacity, dasharray) {
-		delDuplicatePt(points); //  paint smoothline error if adjacent-points duplicate
+		delDuplicatePt(points); //  paint smoothline error when adjacent-points duplicate
 		if (this.options['smoothness'] && this.options["arrowStyle"] == "trend" && this.options["closed"] !== true) {
 			const lineWidth = parseFloat(this._getInternalSymbol()['lineWidth']);
 			const lineColor = this._getInternalSymbol()['lineColor'];
@@ -440,4 +433,4 @@ const LineStringExtend = {
 
 LineString.include(LineStringExtend);
 
-typeof console !== 'undefined' && console.log('maptalks.trendArrow v0.1.2');
+typeof console !== 'undefined' && console.log('maptalks.trendArrow v0.1.3');
